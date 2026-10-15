@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test.use({ reducedMotion: 'reduce' })
+test.use({ contextOptions: { reducedMotion: 'reduce' } })
 
 test.describe('Public homepage', () => {
   test('shows public content without an admin login', async ({ page }) => {
