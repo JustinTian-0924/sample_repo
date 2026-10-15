@@ -2,7 +2,7 @@
 
 加拿大留学咨询公司网站练习项目，使用虚构品牌和演示数据。开发范围以计划书为准：企业展示页面、服务介绍、咨询表单和内容管理后台。
 
-当前处于本地环境搭建阶段，项目基于 Payload Blank 模板，已有 Users 和 Media 集合。业务页面、Services、Articles 和 Leads 将逐步开发。
+项目基于 Payload Blank 模板，已有 Users 和 Media 集合。本地环境、管理员登录和媒体上传已完成开发者验证。当前已编写公共导航、页脚和首页，新增页面仍待安装 UI 依赖及本地验收；独立服务页面、Services、Articles 和 Leads 将逐步开发。
 
 ## 当前开发方式
 
@@ -15,6 +15,7 @@
 | Payload | 3.90.2 |
 | Next.js | 16.3.8 |
 | React | 19.2.6 |
+| Tailwind CSS | 4.3.3（本轮新增，安装后生效） |
 | 数据库镜像 | postgres:17-alpine |
 | 本机数据库地址 | 127.0.0.1:5433 |
 | 数据库名 / 用户名 | maplepath / maplepath |
@@ -251,7 +252,7 @@ npm.cmd run dev -- --hostname 127.0.0.1
 | build | 编译、TypeScript 检查和页面生成成功 |
 | 首页与后台登录 | 返回成功响应，原管理员能登录 |
 | Media 上传与读取 | 创建返回 201，图片文件请求返回 200 |
-| lint | 原配置加载失败；下述配置修复待开发者重新验证 |
+| lint | 配置修复后开发者已验证：0 errors、5 warnings；本轮新增页面需重新检查 |
 
 lint 的 `Converting circular structure to JSON` 错误来自配置加载阶段。模板通过 `FlatCompat` 转换 `next/core-web-vitals` 和 `next/typescript`，但已安装的 Next.js ESLint 配置本身就是 flat config 数组。现已改为直接导入 `eslint-config-next/core-web-vitals` 和 `eslint-config-next/typescript` 并展开，保留项目原有的自定义规则和生成文件忽略项。参考 [Next.js 官方 ESLint 配置示例](https://nextjs.org/docs/app/api-reference/config/eslint#with-typescript)。
 
@@ -282,15 +283,101 @@ Media 的 `The following field is invalid: Alt` 对应模板中的必填 `alt` �
 - [esbuild 安全公告](https://github.com/evanw/esbuild/security/advisories/GHSA-67mh-4wv8-2f99)
 - [npm overrides 说明](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/#overrides)
 
+## 第二阶段：公共导航与首页
+
+项目目录现为 `C:\commission\commision_sample_repo\sample_repo`。文件夹名称与 `package.json` 中的包名可以不同；npm 命令需要在包含 `package.json` 的目录中执行。
+
+### 本轮实现范围
+
+- 蓝白配色、中文首页标题与页面描述、本地 SVG 校园插画。
+- 共享品牌标志、顶部导航和页脚；移动端菜单可展开、收起，按 Escape 关闭并将焦点返回按钮。
+- 留学、签证、移民信息三类服务概览，五步流程、服务理念、六条原生可折叠问答和咨询准备清单。
+- 跳到正文入口、键盘焦点样式、锚点滚动偏移，以及减少动态效果的系统偏好支持。
+- Tailwind CSS 的 PostCSS 配置、本地 shadcn 风格 Button、样式合并工具和组件目录配置。
+
+本轮导航跳转到首页区块，例如 `/#study`，尚未拆分为 `/study` 等独立页面。咨询入口通向准备清单，不会提交或保存咨询记录；Leads 集合和服务端表单验证属于后续阶段。资讯文章也将在 Articles 集合接入后实现。
+
+首页使用静态演示内容，不再根据后台登录状态显示管理员邮箱。公共布局位于 `(frontend)` 路由组，后台继续使用独立的 `(payload)` 布局。品牌和插画为项目本地内容，不依赖远程图片或字体下载。
+
+| 文件 | 负责内容 |
+| --- | --- |
+| `src/app/(frontend)/layout.tsx` | 页面语言、元信息、导航、正文和页脚 |
+| `src/app/(frontend)/page.tsx` | 首页各区块的组合 |
+| `src/app/(frontend)/styles.css` | Tailwind 入口、蓝白主题及响应式布局 |
+| `src/components/site/site-header.tsx` | 导航与移动菜单交互 |
+| `src/components/site/site-footer.tsx` | 页脚及使用说明 |
+| `src/components/site/campus-illustration.tsx` | 本地校园插画 |
+| `src/components/site/icons.tsx` | 品牌标志与图标 |
+| `src/components/ui/button.tsx` | 可复用按钮，可用 `asChild` 渲染链接 |
+| `src/lib/site-content.ts` | 导航、服务、流程与问答的静态数据 |
+| `src/lib/utils.ts` | 合并 Tailwind 类名 |
+| `postcss.config.mjs` / `components.json` | Tailwind 与后续 shadcn 组件配置 |
+| `tests/e2e/frontend.e2e.spec.ts` | 新版首页、导航、问答与移动布局测试 |
+
+### 开发者手动运行
+
+先在运行网站的终端按 `Ctrl+C`。以下命令逐步执行，安装或检查失败时保留错误输出：
+
+```powershell
+Set-Location 'C:\commission\commision_sample_repo\sample_repo'
+npm.cmd install --include=optional
+npm.cmd run lint
+npm.cmd run build
+```
+
+本轮新增了 UI 依赖，需要先 `install` 更新锁文件，再执行检查。无需运行 shadcn 初始化命令，也不要先用旧锁文件执行 `npm ci`。依赖安装后可重新执行 `npm.cmd audit`，将新结果与此前的 13 项告警比较。
+
+本轮修改后，助手未运行安装、lint、构建、测试或浏览器预览；代码写入不代表已通过验证。此前的测试通过记录仅对应当时的代码。
+
+检查完成后启动网站，PostgreSQL 按此前的方式保持运行，以便回归后台：
+
+```powershell
+docker compose up -d --wait postgres
+npm.cmd run dev -- --hostname 127.0.0.1
+```
+
+### 浏览器验收清单
+
+1. 打开 `http://127.0.0.1:3000`，看到 MaplePath 蓝白首页、主标题和校园插画，无远程图片加载错误。
+2. 在桌面宽度点击每个导航、服务咨询入口、页脚链接和“回到顶部”，应到达对应区块，标题不被固定导航遮挡。
+3. 使用浏览器设备模式检查 390px 宽度，再检查 320px 宽度：没有横向滚动，服务卡片改为单列，流程改为纵向。
+4. 手机宽度下展开菜单，选择链接后自动收起；重新展开后按 Escape，可收起并把焦点返回菜单按钮。
+5. 点击常见问题能展开、收起答案；用 Tab / Shift+Tab 导航，按钮和链接有清晰的焦点标记。
+6. 用未登录窗口打开首页，仍能浏览完整内容；页面不展示管理员邮箱。
+7. 打开 `/admin`，使用已有管理员登录，确认 Users、Media 和已上传图片仍可访问。
+8. 咨询入口当前只展示准备清单，不应出现“提交成功”或创建咨询记录的提示。
+
+### 可选：只运行本轮前端自动化测试
+
+首次使用 Playwright 时，由开发者安装 Chromium：
+
+```powershell
+npx.cmd playwright install chromium
+```
+
+随后执行：
+
+```powershell
+npm.cmd run test:e2e:frontend
+```
+
+这条命令只运行更新后的前端测试，覆盖公开首页、桌面锚点、问答开合、移动菜单和横向溢出检查，不运行创建测试用户的后台测试。Playwright 会复用 `127.0.0.1:3000` 上已启动的服务器；未启动时按配置启动本项目的开发服务器。端口需保持为 3000。
+
+测试失败时保留终端输出与生成的报告，先定位原因；不要通过跳过断言或关闭检查来让测试通过。
+
+验收后在 GitHub Desktop 查看变更，将新的配置、源码、README、测试和更新后的 `package-lock.json` 一起提交。提交信息可用 `feat: add responsive homepage and navigation`，再 Push origin。
+
+UI 配置参考：[Tailwind CSS / Next.js](https://tailwindcss.com/docs/installation/framework-guides/nextjs)、[shadcn 手动安装](https://ui.shadcn.com/docs/installation/manual)。
+
 ## 后续验证和版本管理
 
-本阶段先完成上述依赖更新及手动验收。测试入口已改用 npm，当前模板测试仍只覆盖基础场景；`test:e2e` 所需的浏览器安装与端到端验证在后续单独安排。
+先完成本轮依赖安装、构建及首页验收。`test:e2e:frontend` 只覆盖公开页面；完整 `test:e2e` 仍包含模板后台测试，需要另行验证。
 
 如果安装报告依赖漏洞，后续使用 `npm.cmd audit` 查看涉及的依赖和修复范围，再决定升级方案。不要直接用 `npm audit fix --force` 改变已选定的依赖组合。
 
 验收完成后，通过 GitHub Desktop 管理此目录：检查待提交文件，将更新后的 `package.json`、`package-lock.json` 和 README 一起提交，再发布仓库。`.env`、`node_modules`、`.next` 和上传文件目录不应进入提交。
 
-下一步先建立网站导航和首页，再逐步实现服务内容、咨询表单以及后台跟进流程。
+下一步拆分留学、签证、移民信息等独立页面，再逐步实现 CMS 服务内容、咨询表单以及后台跟进流程。
 
 ## 参考资料
 
