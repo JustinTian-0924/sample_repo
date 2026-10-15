@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { CampusIllustration } from '@/components/site/campus-illustration'
+import { FaqList } from '@/components/site/faq-list'
 import { ArrowIcon, ServiceIcon } from '@/components/site/icons'
 import { Button } from '@/components/ui/button'
 import { frequentlyAskedQuestions, processSteps, services } from '@/lib/site-content'
@@ -49,7 +50,7 @@ export default function HomePage() {
                 <p className="service-tagline">{service.title}</p>
                 <p className="service-description">{service.description}</p>
                 <ul>{service.items.map((item) => <li key={item}>{item}</li>)}</ul>
-                <Link className="text-link" href="/#contact">{service.linkLabel}<ArrowIcon /></Link>
+                <Link className="text-link" href={service.href}>{service.linkLabel}<ArrowIcon /></Link>
               </article>
             ))}
           </div>
@@ -81,14 +82,7 @@ export default function HomePage() {
       <section className="section faq-section" id="faq" aria-labelledby="faq-heading">
         <div className="container faq-grid">
           <div><p className="eyebrow">GOOD QUESTIONS, FIRST</p><h2 id="faq-heading">出发前，<br />你可能想了解。</h2><p className="section-description">先回答常见的问题，<br />再开始更具体的交流。</p><a className="text-link" href="#contact">查看咨询准备清单<ArrowIcon /></a></div>
-          <div className="faq-list">
-            {frequentlyAskedQuestions.map((item, index) => (
-              <details className="faq-item" key={item.question}>
-                <summary><span className="faq-number">0{index + 1}</span><span>{item.question}</span><span className="faq-indicator" aria-hidden="true" /></summary>
-                <p>{item.answer}</p>
-              </details>
-            ))}
-          </div>
+          <FaqList items={frequentlyAskedQuestions} />
         </div>
       </section>
 

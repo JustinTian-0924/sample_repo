@@ -14,14 +14,15 @@ test.describe('Public homepage', () => {
     await expect(page.getByRole('img', { name: '加拿大校园与山景插画' })).toBeVisible()
   })
 
-  test('desktop navigation reaches the relevant homepage sections', async ({ page }) => {
+  test('desktop navigation opens a service page and returns to the homepage consultation section', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await page.goto('/')
 
     const navigation = page.getByRole('navigation', { name: '主导航', exact: true })
     await navigation.getByRole('link', { name: '留学规划', exact: true }).click()
-    await expect(page).toHaveURL(/\/#study$/)
-    await expect(page.locator('#study')).toBeInViewport()
+    await expect(page).toHaveURL(/\/study$/)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('找到方向，再规划你的申请。')
+    await expect(navigation.getByRole('link', { name: '留学规划', exact: true })).toHaveAttribute('aria-current', 'page')
 
     await navigation.getByRole('link', { name: '咨询准备', exact: false }).click()
     await expect(page).toHaveURL(/\/#contact$/)
@@ -62,12 +63,69 @@ test.describe('Mobile navigation', () => {
 
     await page.getByRole('button', { name: '展开主导航' }).click()
     await navigation.getByRole('link', { name: '签证协助', exact: true }).click()
-    await expect(page).toHaveURL(/\/#visa$/)
+    await expect(page).toHaveURL(/\/visa$/)
     await expect(navigation).toBeHidden()
 
     const fitsViewport = await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
     )
     expect(fitsViewport).toBe(true)
+  })
+})
+
+const serviceRoutes = [
+  { path: '/study', label: '留学规划', headline: '找到方向，再规划你的申请。' },
+  { path: '/visa', label: '签证协助', headline: '把信息理清，让准备更有序。' },
+  { path: '/immigration', label: '移民信息', headline: '先了解信息，再讨论未来。' },
+]
+
+test.describe('Service detail pages', () => {
+  for (const service of serviceRoutes) {
+    test(`${service.path} supports direct visits, refresh, preparation anchors and FAQ interaction`, async ({ page }) => {
+      const response = await page.goto(service.path)
+      expect(response?.status()).toBe(200)
+      await expect(page).toHaveTitle(`${service.label} | MaplePath Consulting`)
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(service.headline)
+
+      const refreshed = await page.reload()
+      expect(refreshed?.status()).toBe(200)
+      const navigation = page.getByRole('navigation', { name: '主导航', exact: true })
+      await expect(navigation.getByRole('link', { name: service.label, exact: true })).toHaveAttribute('aria-current', 'page')
+
+      await page.getByRole('link', { name: '准备咨询问题', exact: true }).click()
+      await expect(page).toHaveURL(new RegExp(`${service.path}#preparation$`))
+      await expect(page.getByRole('heading', { name: '开始前，先整理这几件事。', exact: true })).toBeInViewport()
+
+      const question = page.locator('#service-faq details').first()
+      await expect(question.locator('p')).toBeHidden()
+      await question.locator('summary').click()
+      await expect(question.locator('p')).toBeVisible()
+
+      const officialLink = page.locator('#official-resources a').first()
+      await expect(officialLink).toHaveAttribute('href', /^https:\/\/www\.canada\.ca\//)
+      await expect(officialLink).toHaveAttribute('target', '_blank')
+    })
+  }
+
+  test('homepage service cards open detail pages and breadcrumb returns home', async ({ page }) => {
+    await page.goto('/')
+    await page.getByRole('link', { name: '了解移民信息', exact: true }).click()
+    await expect(page).toHaveURL(/\/immigration$/)
+    await page.getByRole('navigation', { name: '面包屑', exact: true }).getByRole('link', { name: '首页', exact: true }).click()
+    await expect(page).toHaveURL(/\/$/)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/把留学的下一步，\s*走得更清楚。/)
+  })
+
+  test('service pages fit a 320px mobile viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 780 })
+
+    for (const service of serviceRoutes) {
+      await page.goto(service.path)
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(service.headline)
+      const fitsViewport = await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      )
+      expect(fitsViewport, `${service.path} should not overflow horizontally`).toBe(true)
+    }
   })
 })

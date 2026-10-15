@@ -1,8 +1,8 @@
-// Homepage content is static for this milestone; CMS integration comes later.
+// Public content is static for this milestone; CMS integration comes later.
 export const siteNavigation = [
-  { label: '留学规划', href: '/#study' },
-  { label: '签证协助', href: '/#visa' },
-  { label: '移民信息', href: '/#immigration' },
+  { label: '留学规划', href: '/study' },
+  { label: '签证协助', href: '/visa' },
+  { label: '移民信息', href: '/immigration' },
   { label: '关于我们', href: '/#about' },
   { label: '常见问题', href: '/#faq' },
 ] as const
@@ -16,7 +16,8 @@ export const services = [
     name: '留学规划',
     description: '从你的兴趣、学习经历与未来目标出发，把选校、专业选择和申请准备串成一条清晰的路线。',
     items: ['学习目标与专业方向梳理', '本科及研究生申请准备', '申请时间线与材料清单'],
-    linkLabel: '准备留学咨询',
+    href: '/study',
+    linkLabel: '了解留学规划',
   },
   {
     id: 'visa',
@@ -26,7 +27,8 @@ export const services = [
     name: '签证协助',
     description: '把需要了解的信息、需要核对的材料和待解决的问题分开整理，让每一步准备都有迹可循。',
     items: ['学习许可相关信息整理', '续签与材料准备问题梳理', '官方信息来源核对'],
-    linkLabel: '准备签证咨询',
+    href: '/visa',
+    linkLabel: '了解签证协助',
   },
   {
     id: 'immigration',
@@ -36,7 +38,8 @@ export const services = [
     name: '移民信息',
     description: '先了解信息范围，再整理个人问题。涉及资格判断与个案意见时，应向具备相应资格的专业人士核实。',
     items: ['公开信息与咨询范围介绍', '个人目标与待确认问题整理', '后续专业咨询准备'],
-    linkLabel: '准备移民咨询',
+    href: '/immigration',
+    linkLabel: '了解移民信息',
   },
 ] as const
 

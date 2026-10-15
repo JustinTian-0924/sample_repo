@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -8,6 +9,7 @@ import { siteNavigation } from '@/lib/site-content'
 import { BrandMark } from './icons'
 
 export function SiteHeader() {
+  const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuButton = useRef<HTMLButtonElement>(null)
 
@@ -55,7 +57,12 @@ export function SiteHeader() {
           aria-label="主导航"
         >
           {siteNavigation.map((item) => (
-            <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={pathname === item.href ? 'page' : undefined}
+              onClick={() => setMenuOpen(false)}
+            >
               {item.label}
             </Link>
           ))}

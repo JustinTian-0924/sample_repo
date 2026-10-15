@@ -2,7 +2,9 @@
 
 加拿大留学咨询公司网站练习项目，使用虚构品牌和演示数据。开发范围以计划书为准：企业展示页面、服务介绍、咨询表单和内容管理后台。
 
-项目基于 Payload Blank 模板，已有 Users 和 Media 集合。本地环境、管理员登录和媒体上传已完成开发者验证。当前已编写公共导航、页脚和首页，新增页面仍待安装 UI 依赖及本地验收；独立服务页面、Services、Articles 和 Leads 将逐步开发。
+项目基于 Payload Blank 模板，已有 Users 和 Media 集合。本地环境、管理员与媒体管理、公共导航和首页已由开发者验收并提交。本轮新增留学、签证、移民信息三个独立页面，等待开发者运行检查；Services、Articles 和 Leads 将逐步开发。
+
+完整的已完成功能清单、页面状态及开发路线图见 [项目进度文档](docs/PROJECT_STATUS.md)。
 
 ## 当前开发方式
 
@@ -15,7 +17,7 @@
 | Payload | 3.90.2 |
 | Next.js | 16.3.8 |
 | React | 19.2.6 |
-| Tailwind CSS | 4.3.3（本轮新增，安装后生效） |
+| Tailwind CSS | 4.3.3 |
 | 数据库镜像 | postgres:17-alpine |
 | 本机数据库地址 | 127.0.0.1:5433 |
 | 数据库名 / 用户名 | maplepath / maplepath |
@@ -283,7 +285,9 @@ Media 的 `The following field is invalid: Alt` 对应模板中的必填 `alt` �
 - [esbuild 安全公告](https://github.com/evanw/esbuild/security/advisories/GHSA-67mh-4wv8-2f99)
 - [npm overrides 说明](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/#overrides)
 
-## 第二阶段：公共导航与首页
+## 第二阶段：公共导航与首页（已验收）
+
+开发者已确认本阶段成功验收并提交代码。以下保留实现说明和首次安装步骤；最新待验收内容见下一节的独立服务页面。
 
 项目目录现为 `C:\commission\commision_sample_repo\sample_repo`。文件夹名称与 `package.json` 中的包名可以不同；npm 命令需要在包含 `package.json` 的目录中执行。
 
@@ -295,7 +299,7 @@ Media 的 `The following field is invalid: Alt` 对应模板中的必填 `alt` �
 - 跳到正文入口、键盘焦点样式、锚点滚动偏移，以及减少动态效果的系统偏好支持。
 - Tailwind CSS 的 PostCSS 配置、本地 shadcn 风格 Button、样式合并工具和组件目录配置。
 
-本轮导航跳转到首页区块，例如 `/#study`，尚未拆分为 `/study` 等独立页面。咨询入口通向准备清单，不会提交或保存咨询记录；Leads 集合和服务端表单验证属于后续阶段。资讯文章也将在 Articles 集合接入后实现。
+首页初版的服务导航使用 `/#study` 等区块链接，现已在下一阶段升级为独立服务页面。咨询入口仍通向准备清单，不会提交或保存咨询记录；Leads 集合和服务端表单验证属于后续阶段。资讯文章也将在 Articles 集合接入后实现。
 
 首页使用静态演示内容，不再根据后台登录状态显示管理员邮箱。公共布局位于 `(frontend)` 路由组，后台继续使用独立的 `(payload)` 布局。品牌和插画为项目本地内容，不依赖远程图片或字体下载。
 
@@ -361,7 +365,7 @@ npx.cmd playwright install chromium
 npm.cmd run test:e2e:frontend
 ```
 
-这条命令只运行更新后的前端测试，覆盖公开首页、桌面锚点、问答开合、移动菜单和横向溢出检查，不运行创建测试用户的后台测试。Playwright 会复用 `127.0.0.1:3000` 上已启动的服务器；未启动时按配置启动本项目的开发服务器。端口需保持为 3000。
+这条命令运行公开页面测试，当前已覆盖首页、独立服务页、返回首页区块、问答开合、移动菜单和横向溢出检查，不运行创建测试用户的后台测试。Playwright 会复用 `127.0.0.1:3000` 上已启动的服务器；未启动时按配置启动本项目的开发服务器。端口需保持为 3000。
 
 测试失败时保留终端输出与生成的报告，先定位原因；不要通过跳过断言或关闭检查来让测试通过。
 
@@ -369,15 +373,69 @@ npm.cmd run test:e2e:frontend
 
 UI 配置参考：[Tailwind CSS / Next.js](https://tailwindcss.com/docs/installation/framework-guides/nextjs)、[shadcn 手动安装](https://ui.shadcn.com/docs/installation/manual)。
 
+## 第三阶段：独立服务页面（本轮待验收）
+
+本轮新增 `/study`、`/visa` 和 `/immigration`。三个页面共用详情模板，分别展示服务范围、咨询准备、三条常见问题、官方信息链接和其他服务入口。顶部导航及页脚的三个服务链接、首页服务卡片均已连接到新页面；当前服务的顶部导航会高亮。
+
+关于我们与首页常见问题仍跳回首页对应区块。咨询准备仍是阅读用清单，没有提交表单。本轮不修改数据库结构、不新增依赖；代码写入后未由助手运行任何检查、测试或网站启动命令。
+
+| 文件 | 用途 |
+| --- | --- |
+| `src/app/(frontend)/study/page.tsx` | 留学页面路由、标题和描述 |
+| `src/app/(frontend)/visa/page.tsx` | 签证页面路由、标题和描述 |
+| `src/app/(frontend)/immigration/page.tsx` | 移民信息页面路由、标题和描述 |
+| `src/components/site/service-detail-page.tsx` | 三个页面共用的布局 |
+| `src/components/site/faq-list.tsx` | 首页及详情页共用问答组件 |
+| `src/lib/service-pages.ts` | 三个页面的静态演示内容和官方链接 |
+| `docs/PROJECT_STATUS.md` | 功能清单、当前状态与后续路线图 |
+
+这样安排便于学习：路由文件决定“哪个地址显示什么”，详情模板决定“页面怎么排列”，数据文件决定“页面展示哪些文字”。后续接入 CMS 时可以保留布局，逐步替换内容来源。
+
+### 运行与检查
+
+先停止正在运行的开发服务器，避免同时构建和开发时写入 `.next`。在项目根目录逐条执行，任何一步失败时先保留输出：
+
+```powershell
+Set-Location 'C:\commission\commision_sample_repo\sample_repo'
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e:frontend
+```
+
+沿用上一阶段已安装的依赖，无需重新安装。若上一阶段没有安装 Playwright Chromium，先按上一节的说明安装浏览器。
+
+本轮前端测试新增了三条路由的直接访问、刷新、页面标题、当前导航状态、准备清单锚点、问答展开，以及首页卡片、面包屑返回和 320px 布局检查。官方链接只检查链接属性，不在自动化测试中访问外部网站。这些新增测试尚未执行。
+
+检查结束后启动本地网站；如数据库未运行，先打开 Docker Desktop 并启动它：
+
+```powershell
+docker compose up -d --wait postgres
+npm.cmd run dev -- --hostname 127.0.0.1
+```
+
+### 手动验收
+
+1. 分别直接访问 `http://127.0.0.1:3000/study`、`/visa`、`/immigration`，刷新仍能加载，标签页标题正确。
+2. 首页三张服务卡片、顶部导航和页脚进入对应详情页；当前服务在顶部导航高亮。
+3. 从详情页进入“关于我们”“常见问题”或“咨询准备”，能回到首页的对应区块；面包屑“首页”能返回首页顶部。
+4. 详情页四个导览链接分别定位到服务范围、准备清单、常见问题和官方信息，标题不被顶部导航遮住。
+5. 三个页面的问答均能开合，其他服务入口能互相跳转，官方链接在新标签页打开。
+6. 在 390px 和 320px 宽度下确认没有横向滚动；菜单可收起，内容和按钮可阅读、可点击。
+7. 回归首页问答和 `/admin` 登录，确认原有 Users、Media 和图片仍可访问。
+
+本轮资料入口已核对加拿大政府的 [学习许可](https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit.html)、[指定学习机构](https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit/prepare/designated-learning-institutions-list.html)、[移民信息](https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada.html)及[代表资格核查](https://www.canada.ca/en/immigration-refugees-citizenship/services/immigration-citizenship-representative/choose/authorized.html)页面。站内不复制具体资格、费用或处理时长；访问者应以官方页面的最新说明为准。
+
+验收后用 GitHub Desktop 提交代码和文档，提交信息可用 `feat: add service pages and project roadmap`，再 Push origin。
+
 ## 后续验证和版本管理
 
-先完成本轮依赖安装、构建及首页验收。`test:e2e:frontend` 只覆盖公开页面；完整 `test:e2e` 仍包含模板后台测试，需要另行验证。
+先完成本轮独立服务页面的构建、前端测试及手动验收。`test:e2e:frontend` 只覆盖公开页面；完整 `test:e2e` 仍包含模板后台测试，需要另行验证。
 
 如果安装报告依赖漏洞，后续使用 `npm.cmd audit` 查看涉及的依赖和修复范围，再决定升级方案。不要直接用 `npm audit fix --force` 改变已选定的依赖组合。
 
 验收完成后，通过 GitHub Desktop 管理此目录：检查待提交文件，将更新后的 `package.json`、`package-lock.json` 和 README 一起提交，再发布仓库。`.env`、`node_modules`、`.next` 和上传文件目录不应进入提交。
 
-下一步拆分留学、签证、移民信息等独立页面，再逐步实现 CMS 服务内容、咨询表单以及后台跟进流程。
+下一步补齐关于、联系与隐私说明页面，然后实现咨询提交、服务端验证、Leads 管理和跟进状态。完整顺序与验收目标见 [项目路线图](docs/PROJECT_STATUS.md#后续路线图)。
 
 ## 参考资料
 
