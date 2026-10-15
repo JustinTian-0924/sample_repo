@@ -297,6 +297,44 @@ body { margin: 0; background: var(--background); color: var(--foreground); font-
 .related-services-grid strong { display: block; font-size: 18px; font-weight: 600; }
 .related-services-grid a > span > span { display: block; margin-top: 4px; color: var(--muted-foreground); font-size: 12px; }
 
+.info-page-intro { max-width: 850px; margin-top: 34px; }
+.info-page-intro h1 { margin-top: 20px; font-size: clamp(30px, 3.7vw, 50px); line-height: 1.5; }
+.info-page-intro > p:last-child { max-width: 70ch; margin-top: 22px; color: var(--muted-foreground); font-size: 15px; }
+.contact-actions { margin-top: 24px; }
+.info-page-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; margin-top: 32px; }
+.team-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.team-card { display: flex; align-items: start; gap: 22px; border: 1px solid var(--border); border-radius: 8px; padding: 28px; background: white; }
+.team-initial { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 64px; height: 64px; border-radius: 50%; background: #eaf1f8; color: var(--primary); font-family: var(--font-heading); font-size: 24px; }
+.team-card h3 { font-size: 20px; font-weight: 600; }
+.team-card p { margin-top: 12px; color: var(--muted-foreground); font-size: 13px; }
+.contact-page-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 70px; }
+.contact-page-grid h2 { margin-top: 16px; font-size: 28px; line-height: 1.6; }
+.contact-information { margin: 24px 0; }
+.contact-information > div { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 20px; border-bottom: 1px solid var(--border); padding-block: 18px; font-size: 13px; }
+.contact-information dt { color: #58728a; }
+.contact-information dd { margin: 0; overflow-wrap: anywhere; }
+.contact-information dd > span { display: block; margin-top: 6px; color: var(--muted-foreground); font-size: 12px; }
+.contact-preparation-card { border-radius: 8px; padding: 28px; background: #f1f5f9; scroll-margin-top: 110px; }
+.contact-preparation-card .preparation-list { margin-top: 22px; border: 0; padding-inline: 18px; }
+.contact-service-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.contact-service-links a { display: flex; align-items: center; justify-content: space-between; gap: 15px; border: 1px solid var(--border); border-radius: 6px; padding: 23px; background: white; color: var(--primary); text-decoration: none; }
+.contact-service-links a:hover { text-decoration: underline; }
+.policy-content { max-width: 880px; }
+.policy-content section + section { margin-top: 34px; }
+.policy-content h2 { font-size: 24px; line-height: 1.7; }
+.policy-content p { margin-top: 15px; color: var(--muted-foreground); font-size: 15px; line-height: 2; }
+.policy-content a { color: var(--primary); text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .info-page-intro > p:last-child { font-size: 14px; }
+  .team-grid, .contact-page-grid, .contact-service-links { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .team-card { gap: 16px; padding: 22px; }
+  .team-initial { width: 46px; height: 46px; font-size: 21px; }
+  .contact-preparation-card { padding: 22px; }
+  .contact-page-grid h2 { font-size: 25px; }
+  .contact-information > div { grid-template-columns: 65px minmax(0, 1fr); gap: 12px; }
+}
+
 @media (max-width: 900px) {
   .service-page-introduction, .service-preparation-grid, .service-resource-grid { gap: 35px; }
   .service-page-guide { padding: 22px; }

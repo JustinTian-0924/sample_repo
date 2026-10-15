@@ -1,0 +1,37 @@
+{
+  "_comment": "Project-specific preview egg. Review and test with the actual Panel and Wings versions before use.",
+  "meta": { "version": "PTDL_v2", "update_url": null },
+  "exported_at": "2026-10-14T00:00:00+00:00",
+  "name": "MaplePath Next.js Preview",
+  "author": "preview@maplepath.example",
+  "description": "Node 22 source deployment. Upload project files without Windows node_modules or .next. Provision PostgreSQL separately. Run install, migrate, build, then start as explicit actions.",
+  "features": null,
+  "docker_images": { "Node.js 22": "ghcr.io/ptero-eggs/yolks:nodejs_22" },
+  "file_denylist": [],
+  "startup": "node deploy/panel.mjs",
+  "config": {
+    "files": "{}",
+    "startup": "{\"done\":[\"Ready in\"]}",
+    "logs": "{}",
+    "stop": "^C"
+  },
+  "scripts": {
+    "installation": {
+      "script": "#!/bin/sh\nset -eu\nmkdir -p /mnt/server\nprintf '%s\\n' 'Upload the project source and configure .env before selecting APP_ACTION=install.'\n",
+      "container": "node:22-bookworm-slim",
+      "entrypoint": "sh"
+    }
+  },
+  "variables": [
+    {
+      "name": "Application action",
+      "description": "One action per Start: install dependencies, migrate database, build application, or start the website. One-off actions exit normally when finished.",
+      "env_variable": "APP_ACTION",
+      "default_value": "install",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|in:install,build,migrate,start",
+      "field_type": "text"
+    }
+  ]
+}

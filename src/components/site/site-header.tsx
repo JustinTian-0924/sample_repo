@@ -67,7 +67,7 @@ export function SiteHeader() {
             </Link>
           ))}
           <Button asChild size="sm">
-            <Link href="/#contact" onClick={() => setMenuOpen(false)}>咨询准备 ↗</Link>
+            <Link href="/contact" aria-current={pathname === '/contact' ? 'page' : undefined} onClick={() => setMenuOpen(false)}>咨询准备 ↗</Link>
           </Button>
         </nav>
       </div>

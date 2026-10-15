@@ -88,7 +88,15 @@ export default function HomePage() {
 
       <section className="contact-section" id="contact" aria-labelledby="contact-heading">
         <div className="container contact-grid">
-          <div><p className="eyebrow">LET’S START WITH YOU</p><h2 id="contact-heading">下一步，<br />从一个好问题开始。</h2><p>不必一次想清楚所有事情。<br />先把这三件事写下来，为第一次交流做好准备。</p><p className="contact-demo-note">本演示网站不接收真实咨询或个人资料。</p></div>
+          <div>
+            <p className="eyebrow">LET’S START WITH YOU</p>
+            <h2 id="contact-heading">下一步，<br />从一个好问题开始。</h2>
+            <p>不必一次想清楚所有事情。<br />先把这三件事写下来，为第一次交流做好准备。</p>
+            <div className="contact-actions">
+              <Button asChild variant="outline"><Link href="/contact">查看联系与咨询准备<ArrowIcon /></Link></Button>
+            </div>
+            <p className="contact-demo-note">本演示网站不接收真实咨询或个人资料。</p>
+          </div>
           <div className="consultation-checklist"><p className="checklist-label">你的咨询准备清单</p><ol><li><span>01</span><div><h3>我想了解什么？</h3><p>留学规划、签证准备，或移民相关信息。</p></div></li><li><span>02</span><div><h3>我希望什么时候开始？</h3><p>整理大致时间安排，以及已经完成的准备。</p></div></li><li><span>03</span><div><h3>我最想确认的三个问题？</h3><p>把疑问列出来，让交流更有重点。</p></div></li></ol></div>
         </div>
       </section>

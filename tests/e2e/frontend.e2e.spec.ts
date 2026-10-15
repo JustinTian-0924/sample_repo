@@ -14,7 +14,7 @@ test.describe('Public homepage', () => {
     await expect(page.getByRole('img', { name: '加拿大校园与山景插画' })).toBeVisible()
   })
 
-  test('desktop navigation opens a service page and returns to the homepage consultation section', async ({ page }) => {
+  test('desktop navigation opens a service page and the contact page', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await page.goto('/')
 
@@ -25,8 +25,8 @@ test.describe('Public homepage', () => {
     await expect(navigation.getByRole('link', { name: '留学规划', exact: true })).toHaveAttribute('aria-current', 'page')
 
     await navigation.getByRole('link', { name: '咨询准备', exact: false }).click()
-    await expect(page).toHaveURL(/\/#contact$/)
-    await expect(page.getByRole('heading', { name: /下一步，\s*从一个好问题开始。/ })).toBeInViewport()
+    await expect(page).toHaveURL(/\/contact$/)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('先准备好问题，再开始交流。')
   })
 
   test('FAQ answers can be opened and closed', async ({ page }) => {
@@ -42,6 +42,41 @@ test.describe('Public homepage', () => {
     await expect(answer).toBeVisible()
     await question.locator('summary').click()
     await expect(answer).toBeHidden()
+  })
+})
+
+const informationRoutes = [
+  { path: '/about', title: '关于我们', headline: '认真了解你，才有清晰的下一步。' },
+  { path: '/contact', title: '联系我们', headline: '先准备好问题，再开始交流。' },
+  { path: '/privacy', title: '隐私说明', headline: '了解信息如何使用，再开始浏览。' },
+]
+
+test.describe('Information pages', () => {
+  for (const route of informationRoutes) {
+    test(`${route.path} loads, refreshes, and fits a 320px viewport`, async ({ page }) => {
+      const response = await page.goto(route.path)
+      expect(response?.status()).toBe(200)
+      await expect(page).toHaveTitle(`${route.title} | MaplePath Consulting`)
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(route.headline)
+      await page.reload()
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(route.headline)
+      await page.setViewportSize({ width: 320, height: 780 })
+      const fitsViewport = await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      )
+      expect(fitsViewport).toBe(true)
+    })
+  }
+
+  test('about, contact, and privacy are connected without exposing a submission form', async ({ page }) => {
+    await page.goto('/study')
+    await page.getByRole('navigation', { name: '主导航', exact: true }).getByRole('link', { name: '关于我们', exact: true }).click()
+    await expect(page).toHaveURL(/\/about$/)
+    await page.getByRole('link', { name: '准备第一次交流', exact: false }).click()
+    await expect(page).toHaveURL(/\/contact$/)
+    await expect(page.locator('main form')).toHaveCount(0)
+    await page.getByRole('link', { name: '阅读隐私与使用说明', exact: false }).click()
+    await expect(page).toHaveURL(/\/privacy$/)
   })
 })
 

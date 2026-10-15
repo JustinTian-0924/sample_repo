@@ -71,7 +71,7 @@ export function ServiceDetailPage({ data }: { data: ServicePageData }) {
             <p className="eyebrow">BEFORE YOUR FIRST CONVERSATION</p>
             <h2 id="preparation-heading">开始前，先整理这几件事。</h2>
             <p>{data.preparationIntro}</p>
-            <Link className="text-link" href="/#contact">查看首页咨询准备<ArrowIcon /></Link>
+            <Link className="text-link" href="/contact">查看联系与咨询准备<ArrowIcon /></Link>
           </div>
           <ol className="preparation-list">
             {data.preparation.map((item, index) => (

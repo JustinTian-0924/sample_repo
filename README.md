@@ -2,9 +2,11 @@
 
 加拿大留学咨询公司网站练习项目，使用虚构品牌和演示数据。开发范围以计划书为准：企业展示页面、服务介绍、咨询表单和内容管理后台。
 
-项目基于 Payload Blank 模板，已有 Users 和 Media 集合。本地环境、管理员与媒体管理、公共导航和首页已由开发者验收并提交。本轮新增留学、签证、移民信息三个独立页面，等待开发者运行检查；Services、Articles 和 Leads 将逐步开发。
+项目基于 Payload Blank 模板，已有 Users 和 Media 集合。本地环境、管理员与媒体管理、首页和三个独立服务页面已由开发者验收。本轮补齐关于、联系与隐私说明，并准备首次服务器预览；新增代码与部署配置尚待开发者运行检查。Services、Articles 和 Leads 将逐步开发。
 
 完整的已完成功能清单、页面状态及开发路线图见 [项目进度文档](docs/PROJECT_STATUS.md)。
+
+服务器尝试优先走 [独立 VPS 步骤](docs/DEPLOYMENT_VPS.md)，另保留 [Pterodactyl 步骤](docs/DEPLOYMENT_PTERODACTYL.md)。两份指南中的命令均由开发者执行，当前没有发生服务器部署。
 
 ## 当前开发方式
 
@@ -26,7 +28,7 @@
 
 版本表对应 `package.json` 中的目标配置。修改依赖声明后，需要完成安装并更新 `package-lock.json`，实际安装版本才会同步。
 
-`docker-compose.yml` 负责本项目的 PostgreSQL，包含健康检查和持久化数据卷。本阶段网站通过 `npm.cmd run dev` 启动。模板自带的 Dockerfile 尚未适配和验证，完整应用容器化安排在后续部署阶段。
+`docker-compose.yml` 继续只负责本地 PostgreSQL。本地网站通过 `npm.cmd run dev` 启动。原模板 Dockerfile 已替换为标准生产构建的候选配置，服务器另用 `compose.server.yml`；它们尚未构建或运行验证，不能当作已部署成功。
 
 ## 首次本地启动
 
@@ -373,11 +375,13 @@ npm.cmd run test:e2e:frontend
 
 UI 配置参考：[Tailwind CSS / Next.js](https://tailwindcss.com/docs/installation/framework-guides/nextjs)、[shadcn 手动安装](https://ui.shadcn.com/docs/installation/manual)。
 
-## 第三阶段：独立服务页面（本轮待验收）
+## 第三阶段：独立服务页面（已验收）
+
+开发者已确认本阶段验收完成。以下保留该阶段说明；本轮改动见第四、第五阶段。
 
 本轮新增 `/study`、`/visa` 和 `/immigration`。三个页面共用详情模板，分别展示服务范围、咨询准备、三条常见问题、官方信息链接和其他服务入口。顶部导航及页脚的三个服务链接、首页服务卡片均已连接到新页面；当前服务的顶部导航会高亮。
 
-关于我们与首页常见问题仍跳回首页对应区块。咨询准备仍是阅读用清单，没有提交表单。本轮不修改数据库结构、不新增依赖；代码写入后未由助手运行任何检查、测试或网站启动命令。
+第三阶段中关于我们与常见问题仍跳回首页区块；第四阶段已将关于与咨询准备升级为独立页面。咨询准备仍是阅读用清单，没有提交表单。
 
 | 文件 | 用途 |
 | --- | --- |
@@ -427,15 +431,79 @@ npm.cmd run dev -- --hostname 127.0.0.1
 
 验收后用 GitHub Desktop 提交代码和文档，提交信息可用 `feat: add service pages and project roadmap`，再 Push origin。
 
+## 第四阶段：关于、联系与隐私说明（本轮待验收）
+
+新增 `/about`、`/contact` 和 `/privacy`，共用 `PageIntro`。关于页包含明确标记的虚构团队；联系页展示演示信息和阅读用准备清单，不提供失效的邮件按钮或虚假的表单成功提示。隐私说明描述当前站点行为，不声称已经建立真实咨询数据处理流程。
+
+导航中的“关于我们”进入 `/about`，“咨询准备”进入 `/contact`，页脚隐私入口进入 `/privacy`。服务页和首页也已接入联系页。首页已有区块 ID 保留，原锚点仍可使用。
+
+本轮没有新增 npm 依赖。停止开发服务器后，保持本地数据库运行，逐条检查：
+
+```powershell
+Set-Location 'C:\commission\commision_sample_repo\sample_repo'
+npm.cmd run lint
+npm.cmd run test:int
+npm.cmd run build
+npm.cmd run test:e2e:frontend
+```
+
+新增前端测试覆盖三个页面的直接访问、刷新、标题、320px 布局，以及服务页 → 关于 → 联系 → 隐私的导航。助手未执行这些测试，也未重新执行历史测试。
+
+然后按原方式启动本地网站：
+
+```powershell
+npm.cmd run dev -- --hostname 127.0.0.1
+```
+
+验收三个新页面、手机菜单、首页和服务页入口，回归 `/admin` 登录及原图片读取。当前联系页不应出现咨询提交表单。
+
+## 第五阶段：首次服务器预览（配置待验证）
+
+服务器运行提前到业务闭环开发之前，先验证当前版本能在远程环境运行。当前用户选择优先 VPS，并已更正目标服务器：Ubuntu 26.04 LTS（Resolute）、x86_64、内存总计约 11 GiB、可用约 10 GiB、根分区剩余约 91 GB、无 swap；初始监听快照仅有 SSH 与本机 DNS。此前 Ubuntu 24.04.3 的信息属于另一台服务器，不再用于本次部署。域名及面板权限仍待确认。
+
+Docker 已由开发者安装并验收：Engine 29.9.1、Compose v5.6.0、服务 active、hello-world 成功，安装过程无需重复。下一步是在本地生成并审查初始迁移、完成本轮检查、通过 GitHub Desktop 提交及推送，再由 VPS 获取完整版本。资源快照允许优先尝试在 VPS 内构建 Linux 镜像，实际构建和运行仍待验收；本机构建、导出镜像保留为备用路线。`compose.server.yml` 继续默认绑定 `127.0.0.1:3100`；容器内部与本地开发仍使用 3000。`APP_IMAGE` 指定已显式构建或导入的镜像标签，网站服务不自动从镜像仓库拉取。首次先走 SSH 隧道；域名和 DNS 准备完成后，再核对 80/443 及入站规则并启用 Caddy HTTPS。完整命令见 VPS 指南。助手没有执行远程命令，网站与数据库尚未部署到 VPS。
+
+| 文件 | 用途 |
+| --- | --- |
+| `Dockerfile` / `.dockerignore` | Linux 中安装依赖、生产构建，保留源码和 CLI，以非 root 用户启动 |
+| `compose.server.yml` | 独立 PostgreSQL、网站、媒体卷，以及可选的 HTTPS profile |
+| `.env.production.example` | 服务器环境变量示例；实际密钥文件不提交 |
+| `deploy/Caddyfile` | HTTPS 反向代理与预览访问认证 |
+| `deploy/check-migrations.mjs` | 缺少迁移源文件时停止构建或面板启动流程 |
+| `deploy/pterodactyl-egg.json` / `deploy/panel.mjs` | 面板 Egg 草稿与 install / migrate / build / start 四种动作 |
+| `docs/DEPLOYMENT_VPS.md` | VPS 环境核对、迁移、构建、隧道预览和 HTTPS 的分步说明 |
+| `docs/DEPLOYMENT_PTERODACTYL.md` | 面板实例、数据库、分配端口、动作及反向代理说明 |
+
+服务器适配还包括：
+
+- Payload 可从 `SERVER_URL` 读取浏览器访问地址，用于来源设置；本地未配置时沿用同源行为。
+- 开发模式保留数据库 schema push，生产模式明确关闭 push，使用审查过的迁移。
+- 媒体默认仍保存在当前项目的 `media`，服务器可用 `UPLOAD_DIR` 指定持久化位置。
+- 本地 `.env`、已有数据库与上传内容没有被修改或自动搬迁。
+
+准备部署之前，需要在本地生成并审查初始迁移，再提交到仓库：
+
+```powershell
+npm.cmd run payload -- migrate:create initial
+```
+
+这是生成迁移，不是执行迁移。不要将初始建表迁移直接运行到已经由开发 push 建表的本地数据库。VPS Docker 构建会检查 `src/migrations/index.ts` 和实际迁移文件；没有生成时主动失败，避免到后台访问时才发现缺表。
+
+VPS 首次使用独立新数据库。先通过 SSH 隧道查看并创建管理员，再接域名；当前默认保留预览访问保护。Pterodactyl 同样需要独立 PostgreSQL，不能把数据库容器的地址、宿主机地址与面板分配端口混为一谈。
+
+这里使用普通 `next start`，没有开启 Next.js standalone；因此保留了运行 Payload CLI 所需的源码和依赖。将来优化镜像体积时另行拆分迁移工具，不能直接删除当前依赖后假定 CLI 仍可使用。
+
+本轮部署文件、Egg、迁移检查脚本与 Node 入口只完成写入，未经过 Docker 构建、Compose 启动、Panel 导入或线上验证。不要把配置文件存在视作已经上线。
+
 ## 后续验证和版本管理
 
-先完成本轮独立服务页面的构建、前端测试及手动验收。`test:e2e:frontend` 只覆盖公开页面；完整 `test:e2e` 仍包含模板后台测试，需要另行验证。
+先完成本轮基础页面验收和服务器环境核对，再按部署文档逐步推进。`test:e2e:frontend` 只覆盖公开页面；完整 `test:e2e` 仍包含模板后台测试，需要另行验证。
 
 如果安装报告依赖漏洞，后续使用 `npm.cmd audit` 查看涉及的依赖和修复范围，再决定升级方案。不要直接用 `npm audit fix --force` 改变已选定的依赖组合。
 
 验收完成后，通过 GitHub Desktop 管理此目录：检查待提交文件，将更新后的 `package.json`、`package-lock.json` 和 README 一起提交，再发布仓库。`.env`、`node_modules`、`.next` 和上传文件目录不应进入提交。
 
-下一步补齐关于、联系与隐私说明页面，然后实现咨询提交、服务端验证、Leads 管理和跟进状态。完整顺序与验收目标见 [项目路线图](docs/PROJECT_STATUS.md#后续路线图)。
+服务器预览通过后，继续实现咨询提交、服务端验证、Leads 管理和跟进状态，再接入 CMS 内容。完整顺序与验收目标见 [项目路线图](docs/PROJECT_STATUS.md#后续路线图)。
 
 ## 参考资料
 

@@ -3,7 +3,7 @@ export const siteNavigation = [
   { label: '留学规划', href: '/study' },
   { label: '签证协助', href: '/visa' },
   { label: '移民信息', href: '/immigration' },
-  { label: '关于我们', href: '/#about' },
+  { label: '关于我们', href: '/about' },
   { label: '常见问题', href: '/#faq' },
 ] as const
 

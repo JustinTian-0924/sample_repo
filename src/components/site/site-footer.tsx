@@ -20,11 +20,12 @@ export function SiteFooter() {
           {siteNavigation.map((item) => (
             <Link key={item.href} href={item.href}>{item.label}</Link>
           ))}
+          <Link href="/contact">咨询准备</Link>
         </nav>
         <div className="footer-note">
           <span className="footer-label">关于这个网站</span>
           <p>这是一个加拿大留学咨询网站练习项目。品牌、服务内容均为演示，不代表真实公司或专业资质。</p>
-          <a href="#privacy">隐私与使用说明 ↗</a>
+          <Link href="/privacy">隐私与使用说明 ↗</Link>
         </div>
       </div>
       <div className="container footer-bottom" id="privacy">

@@ -1,0 +1,13 @@
+{$SITE_ADDRESS} {
+  encode zstd gzip
+
+  # Keep server previews private while the application is still being developed.
+  basic_auth {
+    {$PREVIEW_USER} {$PREVIEW_PASSWORD_HASH}
+  }
+
+  reverse_proxy web:3000 {
+    # The preview gateway owns Basic auth; Payload uses its own login cookies.
+    header_up -Authorization
+  }
+}
